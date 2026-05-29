@@ -8,7 +8,7 @@ export function BackButton() {
 
   return (
     <button
-      onClick={() => router.back()}
+      onClick={() => router.push("/")}
       className="text-foreground hover:text-primary transition-colors"
       aria-label="Voltar"
     >
