@@ -10,11 +10,49 @@ type ModalType = "editar" | "saque" | "deposito" | "fechar" | null
 
 export function BancaSidebar({ balance }: BancaSidebarProps) {
   const [activeModal, setActiveModal] = useState<ModalType>(null)
+  const [saldoAtual, setSaldoAtual] = useState(balance)
+  const [meta, setMeta] = useState(300)
+  const [stopLoss, setStopLoss] = useState(20)
+  const [valorSaque, setValorSaque] = useState("")
+  const [valorDeposito, setValorDeposito] = useState("")
 
-  const formattedBalance = balance.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  })
+  const handleSaveEdit = () => {
+    if (meta <= 0) return alert("Meta deve ser maior que 0")
+    if (stopLoss < 0) return alert("Stop loss não pode ser negativo")
+
+    console.log("SALVANDO:", { meta, stopLoss })
+    setActiveModal(null)
+  }
+
+  const handleSaque = () => {
+    const valor = Number(valorSaque)
+
+    if (!valor || valor <= 0) {
+      return alert("Informe um valor válido")
+    }
+
+    if (valor > saldoAtual) {
+      return alert("Saldo insuficiente")
+    }
+
+    setSaldoAtual((prev) => prev - valor)
+
+    setActiveModal(null)
+    setValorSaque("")
+  }
+
+  const handleDeposito = () => {
+    const valor = Number(valorDeposito)
+
+    if (!valor || valor <= 0) {
+      return alert("Informe um valor válido")
+    }
+
+    setSaldoAtual((prev) => prev + valor)
+
+    setActiveModal(null)
+    setValorDeposito("")
+  }
 
   return (
     <>
@@ -22,11 +60,14 @@ export function BancaSidebar({ balance }: BancaSidebarProps) {
         <div className="text-right">
           <span className="text-muted-foreground text-sm">Banca </span>
           <span className="text-primary font-semibold text-lg">
-            {formattedBalance}
+            {saldoAtual.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
           </span>
         </div>
 
-        <div className="flex flex-col gap-2 w-full max-w-[120px]">
+        <div className="flex flex-col gap-2 w-full max-w-[140px]">
           <ActionButton onClick={() => setActiveModal("editar")} variant="primary">
             Editar
           </ActionButton>
@@ -36,7 +77,7 @@ export function BancaSidebar({ balance }: BancaSidebarProps) {
           </ActionButton>
 
           <ActionButton onClick={() => setActiveModal("deposito")} variant="primary">
-            Deposito
+            Depósito
           </ActionButton>
 
           <ActionButton onClick={() => setActiveModal("fechar")} variant="coral">
@@ -46,39 +87,144 @@ export function BancaSidebar({ balance }: BancaSidebarProps) {
       </div>
 
       {/* MODAL */}
-      {activeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          
-          {/* BACKDROP COM BLUR */}
-          <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setActiveModal(null)}
+      {activeModal === "editar" && (
+        <Modal onClose={() => setActiveModal(null)}>
+          <h2 className="modal-title text-center text-primary font-semibold mb-4">
+            Editar meta ou stop loss
+          </h2>
+
+          <Input
+            label="Meta"
+            value={meta}
+            onChange={(e) => setMeta(Number(e.target.value))}
           />
 
-          {/* CONTEÚDO */}
-          <div className="relative z-10 w-[320px] rounded-lg border border-border bg-background p-6 shadow-lg">
-            <h2 className="text-lg font-semibold capitalize mb-2">
-              {activeModal}
-            </h2>
+          <Input
+            label="Stop Loss"
+            value={stopLoss}
+            onChange={(e) => setStopLoss(Number(e.target.value))}
+          />
 
-            <p className="text-sm text-muted-foreground mb-4">
-              Aqui vai o conteúdo do {activeModal}
-            </p>
+          <ModalActions
+            onConfirm={handleSaveEdit}
+            onCancel={() => setActiveModal(null)}
+          />
+        </Modal>
+      )}
 
-            <button
-              onClick={() => setActiveModal(null)}
-              className="text-sm text-primary hover:underline"
-            >
-              Fechar
-            </button>
-          </div>
-        </div>
+      {/* MODAL */}
+      {activeModal === "saque" && (
+        <Modal onClose={() => setActiveModal(null)}>
+          <h2 className="modal-title text-center text-primary font-semibold mb-4">
+            Insira o valor que deseja sacar da banca
+          </h2>
+
+          <Input
+            label="Valor de saque"
+            value={valorSaque}
+            onChange={(e) => setValorSaque(e.target.value)}
+          />
+
+          <ModalActions
+            onConfirm={handleSaque}
+            onCancel={() => setActiveModal(null)}
+          />
+        </Modal>
+      )}
+
+      {/* MODAL */}
+      {activeModal === "deposito" && (
+        <Modal onClose={() => setActiveModal(null)}>
+          <h2 className="modal-title text-center text-primary font-semibold mb-4">
+            Insira o valor que deseja depositar na banca
+          </h2>
+
+          <Input
+            label="Valor do depósito"
+            value={valorDeposito}
+            onChange={(e) => setValorDeposito(e.target.value)}
+          />
+
+          <ModalActions
+            onConfirm={handleDeposito}
+            onCancel={() => setActiveModal(null)}
+          />
+        </Modal>
       )}
     </>
   )
 }
 
-type ButtonVariant = "primary" | "teal" | "coral"
+function Modal({
+  children,
+  onClose,
+}: {
+  children: React.ReactNode
+  onClose: () => void
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <div className="relative z-10 w-[340px] rounded-lg border bg-card shadow-lg p-10">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function Input({
+  label,
+  value,
+  onChange,
+}: {
+  label: string
+  value: string | number
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
+  return (
+    <div className="mb-4">
+      <label className="text-sm text-muted-foreground">{label}</label>
+      <input
+        type="number"
+        value={value}
+        onChange={onChange}
+        className="no-spinner w-full mt-1 px-3 py-2 rounded-md bg-input border text-foreground outline-none focus:ring-2 focus:ring-ring"
+      />
+    </div>
+  )
+}
+
+function ModalActions({
+  onConfirm,
+  onCancel,
+}: {
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  return (
+    <div className="flex gap-2">
+      <button
+        onClick={onConfirm}
+        className="flex-1 bg-primary text-primary-foreground py-2 rounded-md text-sm font-medium"
+      >
+        Salvar
+      </button>
+
+      <button
+        onClick={onCancel}
+        className="flex-1 bg-destructive text-white py-2 rounded-md text-sm font-medium"
+      >
+        Cancelar
+      </button>
+    </div>
+  )
+}
+
+type ButtonVariant = "primary" | "coral"
 
 function ActionButton({
   children,
@@ -89,18 +235,15 @@ function ActionButton({
   variant: ButtonVariant
   onClick?: () => void
 }) {
-  const variantStyles: Record<ButtonVariant, string> = {
-    primary: "bg-primary text-primary-foreground hover:bg-primary/90",
-    teal: "bg-teal-600 text-white hover:bg-teal-700",
-    coral: "bg-red-400 text-white hover:bg-red-500",
-    // coral: "bg-destructive text-white hover:bg-destructive/90",
+  const styles = {
+    primary: "bg-primary text-primary-foreground",
+    coral: "bg-destructive text-white",
   }
 
   return (
     <button
-      type="button"
       onClick={onClick}
-      className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${variantStyles[variant]}`}
+      className={`px-4 py-1.5 rounded-md text-sm font-medium ${styles[variant]}`}
     >
       {children}
     </button>

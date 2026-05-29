@@ -123,3 +123,14 @@
     @apply bg-background text-foreground;
   }
 }
+/* remove setas input number */
+input.no-spinner::-webkit-inner-spin-button,
+input.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+input.no-spinner {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
