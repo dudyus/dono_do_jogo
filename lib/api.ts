@@ -142,6 +142,28 @@ export interface Usuario {
 }
 
 export const api = {
+  // Usuario
+  editarNome: (usuarioId: number, novo_nome: string) =>
+    request<Usuario>(`/usuario/${usuarioId}/nome`, {
+      method: "PATCH",
+      body: JSON.stringify({ novo_nome }),
+    }),
+
+  editarEmail: (usuarioId: number, novo_email: string) =>
+    request<Usuario>(`/usuario/${usuarioId}/email`, {
+      method: "PATCH",
+      body: JSON.stringify({ novo_email }),
+    }),
+
+  alterarSenha: (usuarioId: number, senha_atual: string, nova_senha: string) =>
+    request<{ mensagem: string }>(`/usuario/${usuarioId}/senha`, {
+      method: "PATCH",
+      body: JSON.stringify({ senha_atual, nova_senha }),
+    }),
+
+  deletarUsuario: (usuarioId: number) =>
+    request<{ mensagem: string }>(`/usuario/${usuarioId}`, { method: "DELETE" }),
+
   login: (email: string, senha: string) =>
     request<{ sucesso: boolean; mensagem: string; usuario?: Usuario }>("/login", {
       method: "POST",
