@@ -43,36 +43,34 @@ export function HistoryRow({ date, banca, meta, stopLoss, status, bets }: Histor
         </button>
       </div>
 
-      {isExpanded && bets && bets.length > 0 && (
+      {isExpanded && (
         <div className="px-4 pb-4">
           <div className="bg-card border border-border rounded-lg p-4">
-            <div className="grid grid-cols-3 gap-4 mb-3">
-              <span className="text-xs text-primary">Aposta</span>
-              <span className="text-xs text-primary">ODD</span>
-              <span className="text-xs text-primary">Valor</span>
-            </div>
+            {!bets || bets.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhuma aposta registrada.</p>
+            ) : (
+              <>
+                <div className="grid grid-cols-3 gap-4 mb-3">
+                  <span className="text-xs text-primary">Aposta</span>
+                  <span className="text-xs text-primary">ODD</span>
+                  <span className="text-xs text-primary">Valor</span>
+                </div>
 
-            {bets.map((bet, index) => (
-              <div key={index} className="mb-2">
-                {bet.odd && bet.value ? (
-                  <div className="grid grid-cols-3 gap-4 items-center">
+                {bets.map((bet, index) => (
+                  <div key={index} className="grid grid-cols-3 gap-4 items-center mb-2">
                     <div className="bg-muted rounded px-3 py-2 text-sm text-foreground">
                       {bet.name}
                     </div>
                     <div className="bg-muted rounded px-3 py-2 text-sm text-foreground text-center">
-                      {bet.odd}
+                      {bet.odd ?? "-"}
                     </div>
                     <div className="bg-muted rounded px-3 py-2 text-sm text-foreground text-center">
-                      {bet.value}
+                      {bet.value ?? "-"}
                     </div>
                   </div>
-                ) : (
-                  <div className="bg-muted rounded px-3 py-2 text-sm text-foreground max-w-[200px]">
-                    {bet.name}
-                  </div>
-                )}
-              </div>
-            ))}
+                ))}
+              </>
+            )}
           </div>
         </div>
       )}

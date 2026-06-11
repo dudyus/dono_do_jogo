@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { Plus } from "lucide-react"
+import { Plus, Trash2, X } from "lucide-react"
 import { Header } from "@/components/header"
 import { BackButton } from "@/components/back-button"
 import { MobileNav } from "@/components/mobile-nav"
@@ -11,7 +11,7 @@ import { CriarBancaScreen } from "@/components/criar-banca-screen"
 import { MetaStopModal } from "@/components/meta-stop-modal"
 import { ResultDropdown, type ResultType } from "@/components/result-dropdown"
 import { getUsuarioId } from "@/lib/auth"
-import { api, ApiError, type Aposta, type Banca, type BancaFlags } from "@/lib/api"
+import { api, ApiError, type Aposta, type ApostaMultipla, type Banca, type BancaFlags } from "@/lib/api"
 
 const RESULT_TO_API = {
   "em-andamento": "PENDENTE",
@@ -30,13 +30,21 @@ export default function BancaPage() {
   const [usuarioId, setUsuarioId] = useState<number | null>(null)
   const [banca, setBanca] = useState<Banca | null>(null)
   const [apostas, setApostas] = useState<Aposta[]>([])
+  const [multiplas, setMultiplas] = useState<ApostaMultipla[]>([])
   const [flags, setFlags] = useState<BancaFlags | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState("")
   const [metaStop, setMetaStop] = useState<"meta" | "stop" | null>(null)
 
-  // form de nova aposta
+  // form de nova aposta simples
   const [novaAposta, setNovaAposta] = useState({ tipo: "", odd: "", valor: "" })
+
+  // form de nova múltipla
+  type ItemRascunho = { tipo: string; odd: string }
+  const [novaMultipla, setNovaMultipla] = useState<{ itens: ItemRascunho[]; valor: string }>({
+    itens: [{ tipo: "", odd: "" }],
+    valor: "",
+  })
 
   const carregarBanca = useCallback(async (uid: number) => {
     setCarregando(true)
@@ -46,6 +54,7 @@ export default function BancaPage() {
       const ativa = res.banca && res.banca.status === "ATIVA" && res.banca.saldo_atual > 0
       setBanca(ativa ? res.banca : null)
       setApostas(ativa ? res.apostas ?? [] : [])
+      setMultiplas(ativa ? res.multiplas ?? [] : [])
       setFlags(res.flags ?? null)
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao conectar à API")
@@ -83,6 +92,7 @@ export default function BancaPage() {
       })
       setBanca(res.banca)
       setApostas([])
+      setMultiplas([])
       setFlags(res.flags)
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao criar banca")
@@ -117,6 +127,74 @@ export default function BancaPage() {
     try {
       const res = await api.resultadoAposta(apostaId, RESULT_TO_API[value])
       setApostas((prev) => prev.map((a) => (a.id === apostaId ? res.aposta : a)))
+      setBanca(res.banca)
+      aplicarFlags(res.flags)
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Falha ao atualizar resultado")
+    }
+  }
+
+  const adicionarItemMultipla = () => {
+    setNovaMultipla((prev) => ({ ...prev, itens: [...prev.itens, { tipo: "", odd: "" }] }))
+  }
+
+  const removerItemRascunho = (idx: number) => {
+    setNovaMultipla((prev) => ({ ...prev, itens: prev.itens.filter((_, i) => i !== idx) }))
+  }
+
+  const atualizarItemRascunho = (idx: number, field: "tipo" | "odd", value: string) => {
+    setNovaMultipla((prev) => {
+      const itens = [...prev.itens]
+      itens[idx] = { ...itens[idx], [field]: value }
+      return { ...prev, itens }
+    })
+  }
+
+  const oddAcumulada = novaMultipla.itens.reduce((acc, i) => {
+    const o = Number(i.odd)
+    return o > 1 ? acc * o : acc
+  }, 1)
+
+  const adicionarMultipla = async () => {
+    if (!usuarioId || !banca) return
+    const valor = Number(novaMultipla.valor)
+    if (!valor || valor <= 0) return alert("Informe um valor válido")
+    for (const item of novaMultipla.itens) {
+      if (!item.tipo.trim()) return alert("Preencha todas as seleções")
+      if (!Number(item.odd) || Number(item.odd) <= 1) return alert("Odd inválida em uma das seleções")
+    }
+    if (novaMultipla.itens.length < 2) return alert("Múltipla requer pelo menos 2 seleções")
+    try {
+      const res = await api.criarApostaMultipla({
+        banca_id: banca.id,
+        usuario_id: usuarioId,
+        valor,
+        itens: novaMultipla.itens.map((i) => ({ tipo_aposta: i.tipo.trim(), odd: Number(i.odd) })),
+      })
+      setMultiplas((prev) => [...prev, res.multipla])
+      setBanca(res.banca)
+      setNovaMultipla({ itens: [{ tipo: "", odd: "" }], valor: "" })
+      aplicarFlags(res.flags)
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Falha ao criar múltipla")
+    }
+  }
+
+  const removerItemMultipla = async (multiplaId: number, itemId: number) => {
+    try {
+      const res = await api.removerItemMultipla(multiplaId, itemId)
+      setMultiplas((prev) => prev.map((m) => (m.id === multiplaId ? res.multipla : m)))
+      setBanca(res.banca)
+      aplicarFlags(res.flags)
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Falha ao remover seleção")
+    }
+  }
+
+  const mudarResultadoMultipla = async (multiplaId: number, value: ResultType) => {
+    try {
+      const res = await api.resultadoApostaMultipla(multiplaId, RESULT_TO_API[value])
+      setMultiplas((prev) => prev.map((m) => (m.id === multiplaId ? res.multipla : m)))
       setBanca(res.banca)
       aplicarFlags(res.flags)
     } catch (err) {
@@ -210,8 +288,119 @@ export default function BancaPage() {
                   ))}
                 </div>
 
+                {/* apostas múltiplas existentes */}
+                {multiplas.length > 0 && (
+                  <div className="mt-6 space-y-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Múltiplas</p>
+                    {multiplas.map((m) => (
+                      <div key={m.id} className="bg-muted/30 border border-border rounded-lg p-4 space-y-3">
+                        <div className="flex flex-wrap items-center gap-3 justify-between">
+                          <div className="flex gap-4 text-sm">
+                            <span className="text-muted-foreground">Odd acumulada: <strong className="text-foreground">{m.odd_total.toFixed(2)}</strong></span>
+                            <span className="text-muted-foreground">Valor: <strong className="text-foreground">R$ {m.valor.toFixed(2)}</strong></span>
+                          </div>
+                          <ResultDropdown
+                            value={apiToResult(m.resultado)}
+                            onChange={(v) => mudarResultadoMultipla(m.id, v)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          {m.itens.map((item) => (
+                            <div key={item.id} className="flex items-center gap-2 text-sm">
+                              <span className="flex-1 px-3 py-1.5 bg-card border border-border rounded text-foreground">{item.tipo_aposta}</span>
+                              <span className="w-16 text-center px-2 py-1.5 bg-card border border-border rounded text-foreground">{item.odd.toFixed(2)}</span>
+                              {m.resultado === "PENDENTE" && (
+                                <button
+                                  type="button"
+                                  onClick={() => removerItemMultipla(m.id, item.id)}
+                                  className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                                  title="Remover seleção"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* nova múltipla */}
+                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 mt-6 space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Nova Múltipla</p>
+                  {novaMultipla.itens.map((item, idx) => (
+                    <div key={idx} className="flex flex-col lg:flex-row lg:items-end gap-2">
+                      <div className="flex-1">
+                        {idx === 0 && <label className="block text-xs text-primary mb-1">Seleção</label>}
+                        <input
+                          value={item.tipo}
+                          onChange={(e) => atualizarItemRascunho(idx, "tipo", e.target.value)}
+                          placeholder={`Seleção ${idx + 1}`}
+                          className="w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                      <div className="w-full lg:w-20">
+                        {idx === 0 && <label className="block text-xs text-primary mb-1">ODD</label>}
+                        <input
+                          type="number"
+                          value={item.odd}
+                          onChange={(e) => atualizarItemRascunho(idx, "odd", e.target.value)}
+                          className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                      {novaMultipla.itens.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removerItemRascunho(idx)}
+                          className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={adicionarItemMultipla}
+                    className="text-xs text-primary underline"
+                  >
+                    + Adicionar seleção
+                  </button>
+
+                  {novaMultipla.itens.length >= 2 && oddAcumulada > 1 && (
+                    <p className="text-xs text-muted-foreground">
+                      Odd acumulada: <strong className="text-foreground">{oddAcumulada.toFixed(2)}</strong>
+                    </p>
+                  )}
+
+                  <div className="flex flex-col lg:flex-row lg:items-end gap-3 pt-1">
+                    <div className="w-full lg:w-28">
+                      <label className="block text-xs text-primary mb-1">Valor (R$)</label>
+                      <input
+                        type="number"
+                        value={novaMultipla.valor}
+                        onChange={(e) => setNovaMultipla((prev) => ({ ...prev, valor: e.target.value }))}
+                        className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={adicionarMultipla}
+                      className="flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Criar Múltipla
+                    </button>
+                  </div>
+                </div>
+
+                {/* nova aposta simples */}
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-6 mb-2">Nova Aposta Simples</p>
                 {/* nova aposta */}
-                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 mt-4 flex flex-col lg:flex-row lg:items-end gap-3">
+                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 flex flex-col lg:flex-row lg:items-end gap-3">
                   <div className="flex-1 min-w-[180px]">
                     <label className="block text-xs text-primary mb-1">Aposta</label>
                     <input

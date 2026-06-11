@@ -62,6 +62,26 @@ export interface Aposta {
   data: string | null
 }
 
+export interface ItemApostaMultipla {
+  id: number
+  multipla_id: number
+  partida_id: number | null
+  tipo_aposta: string
+  odd: number
+}
+
+export interface ApostaMultipla {
+  id: number
+  banca_id: number
+  usuario_id: number
+  valor: number
+  odd_total: number
+  lucro_prejuizo: number | null
+  resultado: ResultadoAposta
+  data: string | null
+  itens: ItemApostaMultipla[]
+}
+
 export interface BancaFlags {
   atingiu_meta: boolean
   atingiu_stop: boolean
@@ -136,7 +156,7 @@ export const api = {
 
   // Banca
   bancaAtiva: (usuarioId: number) =>
-    request<{ banca: Banca | null; apostas?: Aposta[]; flags?: BancaFlags }>(
+    request<{ banca: Banca | null; apostas?: Aposta[]; multiplas?: ApostaMultipla[]; flags?: BancaFlags }>(
       `/banca/ativa/${usuarioId}`
     ),
 
@@ -185,6 +205,29 @@ export const api = {
   resultadoAposta: (apostaId: number, resultado: ResultadoAposta) =>
     request<{ aposta: Aposta; banca: Banca; flags: BancaFlags }>(
       `/aposta/${apostaId}/resultado`,
+      { method: "PATCH", body: JSON.stringify({ resultado }) }
+    ),
+
+  criarApostaMultipla: (data: {
+    banca_id: number
+    usuario_id: number
+    valor: number
+    itens: { partida_id?: number | null; tipo_aposta: string; odd: number }[]
+  }) =>
+    request<{ multipla: ApostaMultipla; banca: Banca; flags: BancaFlags }>("/aposta-multipla", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  removerItemMultipla: (multiplaId: number, itemId: number) =>
+    request<{ multipla: ApostaMultipla; banca: Banca; flags: BancaFlags }>(
+      `/aposta-multipla/${multiplaId}/item/${itemId}`,
+      { method: "DELETE" }
+    ),
+
+  resultadoApostaMultipla: (multiplaId: number, resultado: ResultadoAposta) =>
+    request<{ multipla: ApostaMultipla; banca: Banca; flags: BancaFlags }>(
+      `/aposta-multipla/${multiplaId}/resultado`,
       { method: "PATCH", body: JSON.stringify({ resultado }) }
     ),
 
