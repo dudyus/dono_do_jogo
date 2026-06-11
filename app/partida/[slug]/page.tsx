@@ -58,7 +58,7 @@ export default function MatchPage({ params }: MatchPageProps) {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="px-4 py-6 md:px-8 md:py-8 max-w-4xl mx-auto pb-24 md:pb-8">
+      <main className="px-8 py-8 max-w-4xl mx-auto pb-8">
         <div className="flex items-center gap-4 mb-4">
           <BackButton />
         </div>
@@ -70,15 +70,15 @@ export default function MatchPage({ params }: MatchPageProps) {
           <div className="space-y-6">
             {/* Header da partida */}
             <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-center gap-6 md:gap-10">
-                <span className="text-foreground font-semibold text-sm md:text-lg uppercase text-right flex-1">
+              <div className="flex items-center justify-center gap-10">
+                <span className="text-foreground font-semibold text-lg uppercase text-right flex-1">
                   {partida.time_casa}
                 </span>
                 <div className="flex flex-col items-center">
-                  <span className="text-primary font-bold text-xl md:text-3xl">X</span>
+                  <span className="text-primary font-bold text-3xl">X</span>
                   <span className="text-muted-foreground text-sm">{hora(partida.data)}</span>
                 </div>
-                <span className="text-foreground font-semibold text-sm md:text-lg uppercase text-left flex-1">
+                <span className="text-foreground font-semibold text-lg uppercase text-left flex-1">
                   {partida.time_fora}
                 </span>
               </div>
@@ -110,7 +110,7 @@ export default function MatchPage({ params }: MatchPageProps) {
             )}
 
             {/* Odds Betano */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <OddsBloco titulo="Resultado (1x2)" itens={h2h} />
               <OddsBloco titulo="Total de gols" itens={gols} />
             </div>

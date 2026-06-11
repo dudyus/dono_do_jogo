@@ -16,7 +16,7 @@ export function AuthSidebar({
   ctaHref,
 }: AuthSidebarProps) {
   return (
-    <div className="hidden lg:flex flex-col items-center justify-center bg-primary p-12 text-center">
+    <div className="flex flex-col items-center justify-center bg-primary p-12 text-center">
       
       <h1 className="text-5xl font-bold text-white mb-6 text-balance leading-tight">
         {title}

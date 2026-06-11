@@ -37,7 +37,7 @@ export function DeleteAccountSection({ onDelete, carregando }: DeleteAccountSect
   }
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-border">
+    <div className="flex flex-row items-center justify-between gap-4 pt-6 border-t border-border">
       <div>
         <h3 className="text-destructive-foreground font-medium">Deletar minha conta</h3>
         <p className="text-sm text-muted-foreground">

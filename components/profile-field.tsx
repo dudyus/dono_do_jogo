@@ -20,7 +20,7 @@ export function ProfileField({
   const displayValue = type === "password" ? "•".repeat(12) : value
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+    <div className="flex flex-row items-end gap-3">
       <div className="flex-1">
         <label className="block text-sm text-primary mb-2">{label}</label>
         <input

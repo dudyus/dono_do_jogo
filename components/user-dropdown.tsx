@@ -36,7 +36,7 @@ export function UserDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-3"
       >
-        <span className="hidden sm:block text-sm text-foreground">{nome}</span>
+        <span className="text-sm text-foreground">{nome}</span>
         <Avatar className="w-8 h-8">
           <AvatarFallback className="bg-muted text-muted-foreground text-xs">
             {nome ? initials(nome) : "?"}

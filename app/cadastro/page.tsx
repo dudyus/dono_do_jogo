@@ -38,7 +38,7 @@ export default function CadastroPage() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen grid grid-cols-2">
       <AuthSidebar
         title="Comece agora mesmo!"
         subtitle="Crie sua conta e aproveite os recursos da nossa plataforma"
@@ -47,7 +47,7 @@ export default function CadastroPage() {
         ctaHref="/login"
       />
 
-      <div className="flex flex-col items-center justify-center bg-card p-8 lg:p-12">
+      <div className="flex flex-col items-center justify-center bg-card p-12">
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-semibold text-primary text-center mb-8">
             Criar minha conta
@@ -100,12 +100,6 @@ export default function CadastroPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-6 lg:hidden">
-            Já tem uma conta?{" "}
-            <a href="/login" className="text-primary hover:underline">
-              Acessar conta existente
-            </a>
-          </p>
         </div>
       </div>
     </div>

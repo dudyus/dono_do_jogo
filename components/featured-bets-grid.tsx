@@ -52,7 +52,7 @@ const featuredBets = [
 
 export function FeaturedBetsGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4">
       {featuredBets.map((bet, index) => (
         <FeaturedBetCard
           key={index}

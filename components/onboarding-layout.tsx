@@ -31,7 +31,7 @@ export function OnboardingLayout({
           </button>
         )}
 
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-8">
+        <h1 className="text-3xl font-bold text-foreground text-center mb-8">
           Perfil de Aposta
         </h1>
 

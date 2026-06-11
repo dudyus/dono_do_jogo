@@ -36,7 +36,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen grid grid-cols-2">
       <AuthSidebar
         title="Bem vindo de volta!"
         subtitle="Entre na sua conta e continue de onde parou."
@@ -45,7 +45,7 @@ export default function LoginPage() {
         ctaHref="/cadastro"
       />
 
-      <div className="flex flex-col items-center justify-center bg-card p-8 lg:p-12">
+      <div className="flex flex-col items-center justify-center bg-card p-12">
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-semibold text-primary text-center mb-8">
             Acessar minha conta
@@ -85,15 +85,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-6 lg:hidden">
-            Ainda não tem uma conta?{" "}
-            <button
-              type="submit"
-              className="w-full bg-primary text-primary-foreground py-3 rounded-md font-medium hover:bg-primary/90 transition-colors mt-2"
-            >
-              Login
-            </button>
-          </p>
         </div>
       </div>
     </div>

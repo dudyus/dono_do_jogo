@@ -110,10 +110,10 @@ export default function PerfilPage() {
     <div className="min-h-screen bg-background">
       <ProfileHeader title="Informações de perfil" onSignOut={handleSignOut} />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-2xl mx-auto px-6 py-6">
         <div className="mb-6"><BackButton /></div>
 
-        <div className="bg-card rounded-lg border border-border p-6 sm:p-8">
+        <div className="bg-card rounded-lg border border-border p-8">
           <div className="mb-8">
             <ProfileAvatar name={usuario.nome} />
           </div>

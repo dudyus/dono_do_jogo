@@ -26,7 +26,7 @@ export default async function FeaturedBetsPage({ params }: FeaturedBetsPageProps
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="px-4 py-6 md:px-8 md:py-8 max-w-6xl mx-auto pb-24 md:pb-8">
+      <main className="px-8 py-8 max-w-6xl mx-auto pb-8">
         <div className="flex items-center gap-4 mb-4">
           <BackButton />
         </div>

@@ -24,7 +24,7 @@ const riscoCor: Record<string, string> = {
 export function MatchCard({ id, homeTeam, awayTeam, data, betTip, risco }: MatchCardProps) {
   return (
     <Link href={`/partida/${id}`} className="block">
-      <div className="bg-card border border-border rounded-lg p-4 flex flex-col md:flex-row md:items-center gap-4 transition-colors cursor-pointer hover:border-primary/50">
+      <div className="bg-card border border-border rounded-lg p-4 flex flex-row items-center gap-4 transition-colors cursor-pointer hover:border-primary/50">
         {/* Teams */}
         <div className="flex-1 flex flex-col gap-3">
           <TeamRow name={homeTeam} />
@@ -32,12 +32,12 @@ export function MatchCard({ id, homeTeam, awayTeam, data, betTip, risco }: Match
         </div>
 
         {/* Time */}
-        <div className="flex items-center justify-center md:min-w-[80px]">
+        <div className="flex items-center justify-center min-w-[80px]">
           <span className="text-foreground font-medium text-lg">{hora(data)}</span>
         </div>
 
         {/* Bet tip */}
-        <div className="flex-1 flex flex-col items-start md:items-end gap-2">
+        <div className="flex-1 flex flex-col items-end gap-2">
           <span className="text-yellow-300 text-xs">Melhor aposta da partida:</span>
           <div className="bg-primary/20 border border-primary text-primary px-4 py-2 rounded-md text-sm font-medium">
             {betTip}

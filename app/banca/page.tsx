@@ -247,7 +247,7 @@ export default function BancaPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
+      <main className="flex-1 p-8 pb-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
             <BackButton />
@@ -258,7 +258,7 @@ export default function BancaPage() {
           {!banca ? (
             <CriarBancaScreen onCriar={criarBanca} zerada={flags?.zerada} />
           ) : (
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
+            <div className="flex flex-row justify-between items-start gap-6">
               <div className="flex-1">
                 <p className="text-muted-foreground text-sm mb-6">
                   Banca aberta em{" "}
@@ -271,7 +271,7 @@ export default function BancaPage() {
                   {apostas.map((aposta) => (
                     <div
                       key={aposta.id}
-                      className="bg-muted/30 border border-border rounded-lg p-4 flex flex-col lg:flex-row lg:items-end gap-4"
+                      className="bg-muted/30 border border-border rounded-lg p-4 flex flex-row items-end gap-4"
                     >
                       <div className="flex-1 min-w-[180px]">
                         <span className="block text-xs text-primary mb-1">Aposta</span>
@@ -279,13 +279,13 @@ export default function BancaPage() {
                           {aposta.tipo_aposta}
                         </div>
                       </div>
-                      <div className="w-full lg:w-20">
+                      <div className="w-20">
                         <span className="block text-xs text-primary mb-1">ODD</span>
                         <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground text-center">
                           {aposta.odd?.toFixed(2)}
                         </div>
                       </div>
-                      <div className="w-full lg:w-20">
+                      <div className="w-20">
                         <span className="block text-xs text-primary mb-1">Valor</span>
                         <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground text-center">
                           {aposta.valor?.toFixed(2)}
@@ -345,7 +345,7 @@ export default function BancaPage() {
                 <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 mt-6 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Nova Múltipla</p>
                   {novaMultipla.itens.map((item, idx) => (
-                    <div key={idx} className="flex flex-col lg:flex-row lg:items-end gap-2">
+                    <div key={idx} className="flex flex-row items-end gap-2">
                       <div className="flex-1">
                         {idx === 0 && <label className="block text-xs text-primary mb-1">Seleção</label>}
                         <input
@@ -355,7 +355,7 @@ export default function BancaPage() {
                           className="w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                         />
                       </div>
-                      <div className="w-full lg:w-20">
+                      <div className="w-20">
                         {idx === 0 && <label className="block text-xs text-primary mb-1">ODD</label>}
                         <input
                           type="number"
@@ -390,8 +390,8 @@ export default function BancaPage() {
                     </p>
                   )}
 
-                  <div className="flex flex-col lg:flex-row lg:items-end gap-3 pt-1">
-                    <div className="w-full lg:w-28">
+                  <div className="flex flex-row items-end gap-3 pt-1">
+                    <div className="w-28">
                       <label className="block text-xs text-primary mb-1">Valor (R$)</label>
                       <input
                         type="number"
@@ -414,7 +414,7 @@ export default function BancaPage() {
                 {/* nova aposta simples */}
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-6 mb-2">Nova Aposta Simples</p>
                 {/* nova aposta */}
-                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 flex flex-col lg:flex-row lg:items-end gap-3">
+                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 flex flex-row items-end gap-3">
                   <div className="flex-1 min-w-[180px]">
                     <label className="block text-xs text-primary mb-1">Aposta</label>
                     <input
@@ -424,7 +424,7 @@ export default function BancaPage() {
                       className="w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
-                  <div className="w-full lg:w-20">
+                  <div className="w-20">
                     <label className="block text-xs text-primary mb-1">ODD</label>
                     <input
                       type="number"
@@ -433,7 +433,7 @@ export default function BancaPage() {
                       className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
-                  <div className="w-full lg:w-20">
+                  <div className="w-20">
                     <label className="block text-xs text-primary mb-1">Valor</label>
                     <input
                       type="number"
@@ -453,7 +453,7 @@ export default function BancaPage() {
                 </div>
               </div>
 
-              <div className="lg:ml-8">
+              <div className="ml-8">
                 <BancaSidebar
                   banca={banca}
                   onEditar={editarBanca}

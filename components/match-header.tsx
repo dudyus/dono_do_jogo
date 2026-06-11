@@ -10,15 +10,15 @@ interface MatchHeaderProps {
 export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
     return (
   <div className="bg-card border border-border rounded-lg p-6">
-    <div className="flex items-center justify-center gap-6 md:gap-10">
+    <div className="flex items-center justify-center gap-10">
 
       {/* Home Team */}
       <div className="flex items-center gap-3">
-        <span className="text-foreground font-semibold text-sm md:text-lg uppercase">
+        <span className="text-foreground font-semibold text-lg uppercase">
           {homeTeam.name}
         </span>
 
-        <div className="w-10 h-10 md:w-12 md:h-12 relative flex-shrink-0">
+        <div className="w-12 h-12 relative flex-shrink-0">
           <Image
             src={homeTeam.logo}
             alt={`${homeTeam.name} logo`}
@@ -30,7 +30,7 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
 
       {/* Center */}
       <div className="flex flex-col items-center">
-        <span className="text-primary font-bold text-xl md:text-3xl">
+        <span className="text-primary font-bold text-3xl">
           X
         </span>
 
@@ -41,7 +41,7 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
 
       {/* Away Team */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 md:w-12 md:h-12 relative flex-shrink-0">
+        <div className="w-12 h-12 relative flex-shrink-0">
           <Image
             src={awayTeam.logo}
             alt={`${awayTeam.name} logo`}
@@ -50,7 +50,7 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
           />
         </div>
 
-        <span className="text-foreground font-semibold text-sm md:text-lg uppercase">
+        <span className="text-foreground font-semibold text-lg uppercase">
           {awayTeam.name}
         </span>
       </div>
@@ -64,13 +64,10 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
 function TeamDisplay({ team }: { team: Team }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-foreground font-medium text-sm md:text-base uppercase hidden sm:block">
+      <span className="text-foreground font-medium text-base uppercase">
         {team.name}
       </span>
-      <span className="text-foreground font-medium text-sm uppercase sm:hidden">
-        {team.shortName}
-      </span>
-      <div className="w-10 h-10 md:w-12 md:h-12 relative flex-shrink-0">
+      <div className="w-12 h-12 relative flex-shrink-0">
         <Image
           src={team.logo}
           alt={`${team.name} logo`}

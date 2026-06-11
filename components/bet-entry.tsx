@@ -48,7 +48,7 @@ export function BetEntry({
 
   return (
     <div className="bg-muted/30 border border-border rounded-lg p-4">
-      <div className="flex flex-col lg:flex-row lg:items-end gap-4">
+      <div className="flex flex-row items-end gap-4">
         <BetInput
           label="Aposta"
           value={aposta}
@@ -59,13 +59,13 @@ export function BetEntry({
           label="ODD"
           value={odd}
           onChange={(v) => onUpdate(id, "odd", v)}
-          className="w-full lg:w-20"
+          className="w-20"
         />
         <BetInput
           label="Valor"
           value={valor}
           onChange={(v) => onUpdate(id, "valor", v)}
-          className="w-full lg:w-20"
+          className="w-20"
         />
         <div>
           <label className="block text-xs text-primary mb-1">Resultado</label>
