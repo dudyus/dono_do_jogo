@@ -21,8 +21,8 @@ export function CriarBancaScreen({ onCriar, carregando, zerada }: CriarBancaScre
     const sl = Number(stopLoss)
     const m = Number(meta)
     if (!s || s <= 0) return setErro("Informe um valor de banca válido")
-    if (!m || m <= s) return setErro("A meta deve ser maior que a banca inicial")
-    if (sl < 0 || sl >= s) return setErro("O stop loss deve ser entre 0 e a banca inicial")
+    if (!m || m <= 0) return setErro("Informe quanto quer ganhar")
+    if (!sl || sl <= 0 || sl >= s) return setErro("A perda limite deve ser maior que 0 e menor que a banca")
     await onCriar(s, sl, m)
   }
 
@@ -39,9 +39,9 @@ export function CriarBancaScreen({ onCriar, carregando, zerada }: CriarBancaScre
           Defina o valor inicial, sua meta e o stop loss.
         </p>
 
-        <Campo label="Valor da banca (R$)" value={saldo} onChange={setSaldo} placeholder="100" />
-        <Campo label="Meta (R$)" value={meta} onChange={setMeta} placeholder="300" />
-        <Campo label="Stop loss (R$)" value={stopLoss} onChange={setStopLoss} placeholder="50" />
+        <Campo label="Valor da banca (R$)" value={saldo} onChange={setSaldo} placeholder="500" />
+        <Campo label="Quero ganhar (R$)" value={meta} onChange={setMeta} placeholder="100" />
+        <Campo label="Aceito perder até (R$)" value={stopLoss} onChange={setStopLoss} placeholder="100" />
 
         {erro && <p className="text-sm text-destructive mb-3">{erro}</p>}
 

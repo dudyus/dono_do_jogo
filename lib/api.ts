@@ -43,8 +43,11 @@ export interface Banca {
   usuario_id: number
   saldo_inicial: number
   saldo_atual: number
-  stop_loss: number | null
+  saldo_referencia: number
+  /** ganho alvo em R$ (relativo) */
   meta_diaria: number | null
+  /** perda limite em R$ (relativo) */
+  stop_loss: number | null
   status: "ATIVA" | "FECHADA"
   data_criacao: string | null
   data_fechamento: string | null
@@ -197,6 +200,18 @@ export const api = {
     request<{ banca: Banca; flags: BancaFlags }>(`/banca/${bancaId}`, {
       method: "PATCH",
       body: JSON.stringify(data),
+    }),
+
+  depositarBanca: (bancaId: number, valor: number) =>
+    request<{ banca: Banca }>(`/banca/${bancaId}/depositar`, {
+      method: "POST",
+      body: JSON.stringify({ valor }),
+    }),
+
+  sacarBanca: (bancaId: number, valor: number) =>
+    request<{ banca: Banca }>(`/banca/${bancaId}/sacar`, {
+      method: "POST",
+      body: JSON.stringify({ valor }),
     }),
 
   fecharBanca: (bancaId: number) =>

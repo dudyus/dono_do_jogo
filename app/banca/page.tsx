@@ -209,6 +209,20 @@ export default function BancaPage() {
     setFlags(res.flags)
   }
 
+  const depositarBanca = async (valor: number) => {
+    if (!banca) return
+    const res = await api.depositarBanca(banca.id, valor)
+    setBanca(res.banca)
+    // depósito não dispara modal de meta/stop — é entrada de capital, não performance
+  }
+
+  const sacarBanca = async (valor: number) => {
+    if (!banca) return
+    const res = await api.sacarBanca(banca.id, valor)
+    setBanca(res.banca)
+    // saque não dispara modal de meta/stop
+  }
+
   const fecharBanca = async () => {
     if (!banca) return
     await api.fecharBanca(banca.id)
@@ -440,7 +454,13 @@ export default function BancaPage() {
               </div>
 
               <div className="lg:ml-8">
-                <BancaSidebar banca={banca} onEditar={editarBanca} onFechar={fecharBanca} />
+                <BancaSidebar
+                  banca={banca}
+                  onEditar={editarBanca}
+                  onDepositar={depositarBanca}
+                  onSacar={sacarBanca}
+                  onFechar={fecharBanca}
+                />
               </div>
             </div>
           )}
