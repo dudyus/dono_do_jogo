@@ -1,17 +1,32 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { getUsuario, logout } from "@/lib/auth"
+
+function initials(nome: string) {
+  return nome
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
 
 export function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false)
+  const [nome, setNome] = useState("")
   const router = useRouter()
 
+  useEffect(() => {
+    const u = getUsuario()
+    if (u) setNome(u.nome)
+  }, [])
+
   const handleSignOut = () => {
-    // EXEMPLO: ajusta conforme teu projeto
-    localStorage.removeItem("token") // ou o que tu usa
+    logout()
     router.push("/login")
   }
 
@@ -21,10 +36,11 @@ export function UserDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-3"
       >
-        <span className="hidden sm:block text-sm text-foreground">Augusto Muniz</span>
+        <span className="hidden sm:block text-sm text-foreground">{nome}</span>
         <Avatar className="w-8 h-8">
-          <AvatarImage src="/placeholder-avatar.jpg" alt="Augusto Muniz" />
-          <AvatarFallback className="bg-muted text-muted-foreground text-xs">AM</AvatarFallback>
+          <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+            {nome ? initials(nome) : "?"}
+          </AvatarFallback>
         </Avatar>
       </button>
 

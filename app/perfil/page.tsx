@@ -1,18 +1,34 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BackButton } from "@/components/back-button"
 import { ProfileHeader } from "@/components/profile-header"
 import { ProfileAvatar } from "@/components/profile-avatar"
 import { ProfileField } from "@/components/profile-field"
 import { DeleteAccountSection } from "@/components/delete-account-section"
+import { getUsuario, logout } from "@/lib/auth"
+import type { Usuario } from "@/lib/api"
 
 export default function PerfilPage() {
   const router = useRouter()
+  const [usuario, setUsuario] = useState<Usuario | null>(null)
+
+  useEffect(() => {
+    const u = getUsuario()
+    if (!u) {
+      router.push("/login")
+      return
+    }
+    setUsuario(u)
+  }, [router])
 
   const handleSignOut = () => {
+    logout()
     router.push("/login")
   }
+
+  if (!usuario) return null
 
   return (
     <div className="min-h-screen bg-background">
@@ -25,31 +41,31 @@ export default function PerfilPage() {
 
         <div className="bg-card rounded-lg border border-border p-6 sm:p-8">
           <div className="mb-8">
-            <ProfileAvatar
-              name="Augusto Muniz"
-              imageUrl="/placeholder-avatar.jpg"
-            />
+            <ProfileAvatar name={usuario.nome} />
           </div>
 
           <div className="space-y-6">
             <ProfileField
               label="Nome"
-              value="Augusto Muniz"
+              value={usuario.nome}
               buttonText="Editar nome"
+              onEdit={() => {/* futuro: modal de edição de nome */}}
             />
 
             <ProfileField
               label="Email"
-              value="gutomuniz@gmail.com"
+              value={usuario.email}
               buttonText="Editar email"
+              onEdit={() => {/* futuro: modal de edição de email */}}
             />
 
             <ProfileField
               label="Senha"
-              value="password123"
+              value=""
               type="password"
               buttonText="Mudar senha"
               buttonVariant="primary"
+              onEdit={() => {/* futuro: modal de alteração de senha */}}
             />
           </div>
 
