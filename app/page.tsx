@@ -9,7 +9,7 @@ export default function Home() {
 
       <main className="max-w-4xl mx-auto px-8 py-6">
         <div className="mb-6">
-          <h2 className="text-muted-foreground text-sm">Próximas partidas · Brasileirão Série A</h2>
+          <h2 className="text-muted-foreground text-sm">Próximas partidas · Premier League</h2>
         </div>
         
         <MatchList />

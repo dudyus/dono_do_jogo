@@ -12,6 +12,12 @@ import { api, ApiError, type Usuario } from "@/lib/api"
 
 type Modal = "nome" | "email" | "senha" | null
 
+const PERFIL_LABEL: Record<string, string> = {
+  CONSERVADOR: "Conservador",
+  MODERADO: "Moderado",
+  AGRESSIVO: "Agressivo",
+}
+
 export default function PerfilPage() {
   const router = useRouter()
   const [usuario, setUsuario] = useState<Usuario | null>(null)
@@ -20,7 +26,6 @@ export default function PerfilPage() {
   const [sucesso, setSucesso] = useState("")
   const [carregando, setCarregando] = useState(false)
 
-  // campos dos formulários
   const [novoNome, setNovoNome] = useState("")
   const [novoEmail, setNovoEmail] = useState("")
   const [senhaAtual, setSenhaAtual] = useState("")
@@ -139,6 +144,13 @@ export default function PerfilPage() {
               buttonVariant="primary"
               onEdit={() => abrirModal("senha")}
             />
+            <ProfileField
+              label="Perfil de risco"
+              value={usuario.perfil_risco ? PERFIL_LABEL[usuario.perfil_risco] ?? usuario.perfil_risco : "Não definido"}
+              buttonText="Refazer teste"
+              buttonVariant="primary"
+              onEdit={() => router.push("/onboarding")}
+            />
           </div>
 
           <div className="mt-8">
@@ -147,12 +159,10 @@ export default function PerfilPage() {
         </div>
       </main>
 
-      {/* ── Overlay de modal ── */}
       {modal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="bg-card border border-border rounded-lg w-full max-w-md p-6 shadow-xl">
 
-            {/* Editar nome */}
             {modal === "nome" && (
               <>
                 <h2 className="text-base font-semibold text-foreground mb-4">Editar nome</h2>
@@ -166,7 +176,6 @@ export default function PerfilPage() {
               </>
             )}
 
-            {/* Editar email */}
             {modal === "email" && (
               <>
                 <h2 className="text-base font-semibold text-foreground mb-4">Editar email</h2>
@@ -181,7 +190,6 @@ export default function PerfilPage() {
               </>
             )}
 
-            {/* Alterar senha */}
             {modal === "senha" && (
               <>
                 <h2 className="text-base font-semibold text-foreground mb-4">Alterar senha</h2>

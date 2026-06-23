@@ -20,7 +20,6 @@ export function HistoryTable({ items }: { items: HistoryItem[] }) {
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
-      {/* Header */}
       <div className="grid grid-cols-6 py-3 px-4 border-b border-border text-xs uppercase font-light text-muted-foreground">
         <span>Data</span>
         <span>Banca</span>
@@ -30,7 +29,6 @@ export function HistoryTable({ items }: { items: HistoryItem[] }) {
         <span className="text-center">Detalhes</span>
       </div>
 
-      {/* Rows */}
       {items.map((item, index) => (
         <HistoryRow
           key={index}

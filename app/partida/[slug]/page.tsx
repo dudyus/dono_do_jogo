@@ -6,6 +6,7 @@ import { Header } from "@/components/header"
 import { MobileNav } from "@/components/mobile-nav"
 import { BackButton } from "@/components/back-button"
 import { api, ApiError, type OddItem, type Recomendacao } from "@/lib/api"
+import { getUsuarioId } from "@/lib/auth"
 
 interface MatchPageProps {
   params: Promise<{ slug: string }>
@@ -39,7 +40,7 @@ export default function MatchPage({ params }: MatchPageProps) {
       setCarregando(false)
       return
     }
-    Promise.all([api.oddsPartida(partidaId), api.recomendacao(partidaId)])
+    Promise.all([api.oddsPartida(partidaId), api.recomendacao(partidaId, getUsuarioId())])
       .then(([o, r]) => {
         setOdds(o.odds)
         setPartida({ time_casa: o.partida.time_casa, time_fora: o.partida.time_fora, data: o.partida.data })
@@ -68,7 +69,6 @@ export default function MatchPage({ params }: MatchPageProps) {
 
         {!carregando && !erro && partida && (
           <div className="space-y-6">
-            {/* Header da partida */}
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="flex items-center justify-center gap-10">
                 <span className="text-foreground font-semibold text-lg uppercase text-right flex-1">
@@ -84,7 +84,6 @@ export default function MatchPage({ params }: MatchPageProps) {
               </div>
             </div>
 
-            {/* Recomendação */}
             {rec?.melhor_aposta && (
               <div className="bg-primary/10 border border-primary rounded-lg p-5">
                 <div className="flex items-center justify-between mb-2">
@@ -98,7 +97,7 @@ export default function MatchPage({ params }: MatchPageProps) {
                     {rec.melhor_aposta.rotulo}
                   </span>
                   <span className="text-foreground text-sm">
-                    odd {rec.melhor_aposta.odd.toFixed(2)} · Betano
+                    odd {rec.melhor_aposta.odd.toFixed(2)} · {rec.melhor_aposta.casa_aposta}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{rec.justificativa}</p>
@@ -109,14 +108,10 @@ export default function MatchPage({ params }: MatchPageProps) {
               </div>
             )}
 
-            {/* Odds Betano */}
             <div className="grid grid-cols-2 gap-4">
               <OddsBloco titulo="Resultado (1x2)" itens={h2h} />
               <OddsBloco titulo="Total de gols" itens={gols} />
             </div>
-            <p className="text-[11px] text-muted-foreground text-center">
-              Odds Betano (mock) · mercados h2h e gols
-            </p>
           </div>
         )}
       </main>
@@ -129,7 +124,10 @@ export default function MatchPage({ params }: MatchPageProps) {
 function OddsBloco({ titulo, itens }: { titulo: string; itens: OddItem[] }) {
   return (
     <div className="bg-card border border-border rounded-lg p-4">
-      <h3 className="text-foreground font-medium text-sm mb-4 text-center">{titulo}</h3>
+      <h3 className="text-foreground font-medium text-sm mb-1 text-center">{titulo}</h3>
+      {itens[0] && (
+        <p className="text-[11px] text-muted-foreground text-center mb-3">{itens[0].casa_aposta}</p>
+      )}
       <div className="space-y-2">
         {itens.map((o) => (
           <div key={o.tipo_aposta} className="flex items-center justify-between text-sm">

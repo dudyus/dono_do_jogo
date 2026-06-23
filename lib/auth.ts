@@ -1,7 +1,5 @@
 "use client"
 
-// Auth simples baseada em localStorage (TCC). Guarda o usuário logado.
-
 import type { Usuario } from "./api"
 
 const KEY = "ddj_usuario"

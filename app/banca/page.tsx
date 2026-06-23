@@ -36,10 +36,8 @@ export default function BancaPage() {
   const [erro, setErro] = useState("")
   const [metaStop, setMetaStop] = useState<"meta" | "stop" | null>(null)
 
-  // form de nova aposta simples
   const [novaAposta, setNovaAposta] = useState({ tipo: "", odd: "", valor: "" })
 
-  // form de nova múltipla
   type ItemRascunho = { tipo: string; odd: string }
   const [novaMultipla, setNovaMultipla] = useState<{ itens: ItemRascunho[]; valor: string }>({
     itens: [{ tipo: "", odd: "" }],
@@ -213,14 +211,12 @@ export default function BancaPage() {
     if (!banca) return
     const res = await api.depositarBanca(banca.id, valor)
     setBanca(res.banca)
-    // depósito não dispara modal de meta/stop — é entrada de capital, não performance
   }
 
   const sacarBanca = async (valor: number) => {
     if (!banca) return
     const res = await api.sacarBanca(banca.id, valor)
     setBanca(res.banca)
-    // saque não dispara modal de meta/stop
   }
 
   const fecharBanca = async () => {
@@ -228,8 +224,6 @@ export default function BancaPage() {
     await api.fecharBanca(banca.id)
     router.push("/historico")
   }
-
-  // ---------- render ----------
 
   if (carregando) {
     return (
@@ -302,7 +296,6 @@ export default function BancaPage() {
                   ))}
                 </div>
 
-                {/* apostas múltiplas existentes */}
                 {multiplas.length > 0 && (
                   <div className="mt-6 space-y-4">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Múltiplas</p>
@@ -341,7 +334,6 @@ export default function BancaPage() {
                   </div>
                 )}
 
-                {/* nova múltipla */}
                 <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 mt-6 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Nova Múltipla</p>
                   {novaMultipla.itens.map((item, idx) => (
@@ -411,9 +403,7 @@ export default function BancaPage() {
                   </div>
                 </div>
 
-                {/* nova aposta simples */}
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-6 mb-2">Nova Aposta Simples</p>
-                {/* nova aposta */}
                 <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 flex flex-row items-end gap-3">
                   <div className="flex-1 min-w-[180px]">
                     <label className="block text-xs text-primary mb-1">Aposta</label>

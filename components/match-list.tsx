@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { MatchCard } from "./match-card"
 import { api, ApiError, type PartidaProxima } from "@/lib/api"
+import { getUsuarioId } from "@/lib/auth"
 
 export function MatchList() {
   const [partidas, setPartidas] = useState<PartidaProxima[]>([])
@@ -11,7 +12,7 @@ export function MatchList() {
 
   useEffect(() => {
     api
-      .partidasProximas(10)
+      .partidasProximas(10, getUsuarioId())
       .then((res) => setPartidas(res.partidas))
       .catch((err) =>
         setErro(err instanceof ApiError ? err.message : "Falha ao conectar à API")

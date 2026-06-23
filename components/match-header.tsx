@@ -12,7 +12,6 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
   <div className="bg-card border border-border rounded-lg p-6">
     <div className="flex items-center justify-center gap-10">
 
-      {/* Home Team */}
       <div className="flex items-center gap-3">
         <span className="text-foreground font-semibold text-lg uppercase">
           {homeTeam.name}
@@ -28,7 +27,6 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
         </div>
       </div>
 
-      {/* Center */}
       <div className="flex flex-col items-center">
         <span className="text-primary font-bold text-3xl">
           X
@@ -39,7 +37,6 @@ export function MatchHeader({ homeTeam, awayTeam, time }: MatchHeaderProps) {
         </span>
       </div>
 
-      {/* Away Team */}
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 relative flex-shrink-0">
           <Image

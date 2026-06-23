@@ -109,7 +109,6 @@ export function BancaSidebar({ banca, onEditar, onDepositar, onSacar, onFechar }
         </div>
       </div>
 
-      {/* Modal: Depositar / Sacar */}
       {(modalAtivo === "depositar" || modalAtivo === "sacar") && (
         <Modal onClose={fecharModal}>
           <h2 className="text-center text-primary font-semibold mb-1">
@@ -149,7 +148,6 @@ export function BancaSidebar({ banca, onEditar, onDepositar, onSacar, onFechar }
         </Modal>
       )}
 
-      {/* Modal: Editar meta / stop */}
       {modalAtivo === "editar" && (
         <Modal onClose={fecharModal}>
           <h2 className="text-center text-primary font-semibold mb-4">

@@ -1,5 +1,3 @@
-// Cliente HTTP da API (FastAPI). Base via NEXT_PUBLIC_API_URL.
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -17,9 +15,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     try {
       const body = await res.json()
       detail = body.detail ?? detail
-    } catch {
-      // resposta sem JSON
-    }
+    } catch {}
     throw new ApiError(detail, res.status)
   }
 
@@ -34,8 +30,6 @@ export class ApiError extends Error {
   }
 }
 
-// ---------- Tipos ----------
-
 export type ResultadoAposta = "PENDENTE" | "GANHA" | "PERDIDA" | "CANCELADA"
 
 export interface Banca {
@@ -44,9 +38,7 @@ export interface Banca {
   saldo_inicial: number
   saldo_atual: number
   saldo_referencia: number
-  /** ganho alvo em R$ (relativo) */
   meta_diaria: number | null
-  /** perda limite em R$ (relativo) */
   stop_loss: number | null
   status: "ATIVA" | "FECHADA"
   data_criacao: string | null
@@ -135,8 +127,6 @@ export interface Recomendacao {
   odds: OddItem[]
 }
 
-// ---------- Auth ----------
-
 export interface Usuario {
   id: number
   nome: string
@@ -144,8 +134,25 @@ export interface Usuario {
   perfil_risco: string | null
 }
 
+export interface Alternativa {
+  id: number
+  texto: string
+}
+
+export interface Pergunta {
+  id: number
+  texto: string
+  alternativas: Alternativa[]
+}
+
+export interface ResultadoAnamnese {
+  anamnese_id: number
+  score_total: number
+  perfil: string
+  usuario: Usuario | null
+}
+
 export const api = {
-  // Usuario
   editarNome: (usuarioId: number, novo_nome: string) =>
     request<Usuario>(`/usuario/${usuarioId}/nome`, {
       method: "PATCH",
@@ -179,7 +186,17 @@ export const api = {
       body: JSON.stringify({ nome, email, senha }),
     }),
 
-  // Banca
+  perguntas: () => request<Pergunta[]>("/perguntas"),
+
+  enviarAnamnese: (usuario_id: number, respostas: { pergunta_id: number; alternativa_id: number }[]) =>
+    request<{ mensagem: string; anamnese_id: number }>("/anamnese", {
+      method: "POST",
+      body: JSON.stringify({ usuario_id, respostas }),
+    }),
+
+  resultadoAnamnese: (anamneseId: number) =>
+    request<ResultadoAnamnese>(`/anamnese/resultado/${anamneseId}`),
+
   bancaAtiva: (usuarioId: number) =>
     request<{ banca: Banca | null; apostas?: Aposta[]; multiplas?: ApostaMultipla[]; flags?: BancaFlags }>(
       `/banca/ativa/${usuarioId}`
@@ -225,7 +242,6 @@ export const api = {
       apostas: Aposta[]
     })[] }>(`/banca/historico/${usuarioId}`),
 
-  // Aposta
   criarAposta: (data: {
     banca_id: number
     usuario_id: number
@@ -268,15 +284,18 @@ export const api = {
       { method: "PATCH", body: JSON.stringify({ resultado }) }
     ),
 
-  // Partidas / odds / recomendação
-  partidasProximas: (limite = 10) =>
-    request<{ partidas: PartidaProxima[] }>(`/partidas/proximas?limite=${limite}`),
+  partidasProximas: (limite = 10, usuarioId?: number | null) =>
+    request<{ partidas: PartidaProxima[] }>(
+      `/partidas/proximas?limite=${limite}${usuarioId ? `&usuario_id=${usuarioId}` : ""}`
+    ),
 
   oddsPartida: (partidaId: number) =>
     request<{ partida: PartidaProxima; odds: OddItem[] }>(
       `/partidas/${partidaId}/odds`
     ),
 
-  recomendacao: (partidaId: number) =>
-    request<Recomendacao>(`/partidas/${partidaId}/recomendacao`),
+  recomendacao: (partidaId: number, usuarioId?: number | null) =>
+    request<Recomendacao>(
+      `/partidas/${partidaId}/recomendacao${usuarioId ? `?usuario_id=${usuarioId}` : ""}`
+    ),
 }
