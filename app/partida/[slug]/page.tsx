@@ -52,8 +52,12 @@ export default function MatchPage({ params }: MatchPageProps) {
       .finally(() => setCarregando(false))
   }, [partidaId])
 
-  const h2h = odds.filter((o) => o.mercado === "h2h")
-  const gols = odds.filter((o) => o.mercado === "gols")
+  const porCasaAposta = new Map<string, OddItem[]>()
+  for (const item of odds) {
+    const lista = porCasaAposta.get(item.casa_aposta) ?? []
+    lista.push(item)
+    porCasaAposta.set(item.casa_aposta, lista)
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,7 +91,7 @@ export default function MatchPage({ params }: MatchPageProps) {
             {rec?.melhor_aposta && (
               <div className="bg-primary/10 border border-primary rounded-lg p-5">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-yellow-300 text-xs uppercase">Melhor aposta (análise)</span>
+                  <span className="text-yellow-300 text-xs uppercase">Melhor aposta</span>
                   <span className={`text-xs font-medium ${riscoCor[rec.risco] ?? "text-muted-foreground"}`}>
                     Risco {rec.risco}
                   </span>
@@ -109,8 +113,9 @@ export default function MatchPage({ params }: MatchPageProps) {
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <OddsBloco titulo="Resultado (1x2)" itens={h2h} />
-              <OddsBloco titulo="Total de gols" itens={gols} />
+              {Array.from(porCasaAposta.entries()).map(([casaAposta, itensCasa]) => (
+                <CasaApostaCard key={casaAposta} casaAposta={casaAposta} itens={itensCasa} />
+              ))}
             </div>
           </div>
         )}
@@ -121,13 +126,29 @@ export default function MatchPage({ params }: MatchPageProps) {
   )
 }
 
-function OddsBloco({ titulo, itens }: { titulo: string; itens: OddItem[] }) {
+function CasaApostaCard({ casaAposta, itens }: { casaAposta: string; itens: OddItem[] }) {
+  const h2h = itens.filter((o) => o.mercado === "h2h")
+  const gols = itens.filter((o) => o.mercado === "gols")
+  const handicap = itens.filter((o) => o.mercado === "handicap")
+
   return (
     <div className="bg-card border border-border rounded-lg p-4">
-      <h3 className="text-foreground font-medium text-sm mb-1 text-center">{titulo}</h3>
-      {itens[0] && (
-        <p className="text-[11px] text-muted-foreground text-center mb-3">{itens[0].casa_aposta}</p>
-      )}
+      <h3 className="text-foreground font-medium text-sm mb-3 text-center">{casaAposta}</h3>
+      <div className="space-y-4">
+        <OddsSecao titulo="Resultado (1x2)" itens={h2h} />
+        <OddsSecao titulo="Handicap" itens={handicap} />
+        <OddsSecao titulo="Total de gols" itens={gols} />
+      </div>
+    </div>
+  )
+}
+
+function OddsSecao({ titulo, itens }: { titulo: string; itens: OddItem[] }) {
+  if (itens.length === 0) return null
+
+  return (
+    <div>
+      <p className="text-[11px] text-muted-foreground text-center mb-2">{titulo}</p>
       <div className="space-y-2">
         {itens.map((o) => (
           <div key={o.tipo_aposta} className="flex items-center justify-between text-sm">
