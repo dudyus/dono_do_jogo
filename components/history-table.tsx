@@ -7,7 +7,13 @@ export interface HistoryItem {
   meta: string
   stopLoss: string
   status: "Fechada" | "Red" | "Green"
-  bets: { name: string; odd?: string; value?: string }[]
+  bets: { name: string; odd?: string; value?: string; resultado: string }[]
+  multiplas: {
+    oddTotal: string
+    valor: string
+    resultado: string
+    itens: { name: string; odd: string; resultado: string }[]
+  }[]
 }
 
 export function HistoryTable({ items }: { items: HistoryItem[] }) {
@@ -41,6 +47,7 @@ export function HistoryTable({ items }: { items: HistoryItem[] }) {
           stopLoss={item.stopLoss}
           status={item.status}
           bets={item.bets}
+          multiplas={item.multiplas}
         />
       ))}
     </div>

@@ -68,6 +68,17 @@ export default function HistoricoPage() {
               name: a.tipo_aposta,
               odd: a.odd != null ? a.odd.toFixed(2).replace(".", ",") : undefined,
               value: a.valor != null ? a.valor.toFixed(2) : undefined,
+              resultado: a.resultado,
+            })),
+            multiplas: b.multiplas.map((m) => ({
+              oddTotal: m.odd_total.toFixed(2),
+              valor: m.valor.toFixed(2),
+              resultado: m.resultado,
+              itens: m.itens.map((item) => ({
+                name: item.tipo_aposta,
+                odd: item.odd.toFixed(2),
+                resultado: item.resultado,
+              })),
             })),
             mesAno: mesAnoChave(b.data_fechamento ?? b.data_criacao),
           }))

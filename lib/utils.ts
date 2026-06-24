@@ -34,3 +34,17 @@ export function chaveDataPartida(iso: string | null): string {
   if (!iso) return "sem-data"
   return paraDataUtc(iso).toLocaleDateString("en-CA", { timeZone: FUSO_PARTIDAS })
 }
+
+export const RESULTADO_LABEL: Record<string, string> = {
+  PENDENTE: "Em andamento",
+  GANHA: "Green",
+  PERDIDA: "Red",
+  CANCELADA: "Cancelada",
+}
+
+export const RESULTADO_COR: Record<string, string> = {
+  PENDENTE: "bg-yellow-500/15 text-yellow-300",
+  GANHA: "bg-green-500/15 text-green-500",
+  PERDIDA: "bg-red-500/15 text-red-500",
+  CANCELADA: "bg-muted text-muted-foreground",
+}

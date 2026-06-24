@@ -63,6 +63,7 @@ export interface ItemApostaMultipla {
   partida_id: number | null
   tipo_aposta: string
   odd: number
+  resultado: ResultadoAposta
 }
 
 export interface ApostaMultipla {
@@ -240,6 +241,7 @@ export const api = {
       apostas_ganhas: number
       apostas_perdidas: number
       apostas: Aposta[]
+      multiplas: ApostaMultipla[]
     })[] }>(`/banca/historico/${usuarioId}`),
 
   criarAposta: (data: {
@@ -281,6 +283,12 @@ export const api = {
   resultadoApostaMultipla: (multiplaId: number, resultado: ResultadoAposta) =>
     request<{ multipla: ApostaMultipla; banca: Banca; flags: BancaFlags }>(
       `/aposta-multipla/${multiplaId}/resultado`,
+      { method: "PATCH", body: JSON.stringify({ resultado }) }
+    ),
+
+  resultadoItemMultipla: (multiplaId: number, itemId: number, resultado: ResultadoAposta) =>
+    request<{ multipla: ApostaMultipla; banca: Banca; flags: BancaFlags }>(
+      `/aposta-multipla/${multiplaId}/item/${itemId}/resultado`,
       { method: "PATCH", body: JSON.stringify({ resultado }) }
     ),
 

@@ -12,6 +12,7 @@ import { MetaStopModal } from "@/components/meta-stop-modal"
 import { ResultDropdown, type ResultType } from "@/components/result-dropdown"
 import { getUsuarioId } from "@/lib/auth"
 import { api, ApiError, type Aposta, type ApostaMultipla, type Banca, type BancaFlags } from "@/lib/api"
+import { RESULTADO_LABEL, RESULTADO_COR } from "@/lib/utils"
 
 const RESULT_TO_API = {
   "em-andamento": "PENDENTE",
@@ -189,14 +190,25 @@ export default function BancaPage() {
     }
   }
 
-  const mudarResultadoMultipla = async (multiplaId: number, value: ResultType) => {
+  const cancelarMultipla = async (multiplaId: number) => {
     try {
-      const res = await api.resultadoApostaMultipla(multiplaId, RESULT_TO_API[value])
+      const res = await api.resultadoApostaMultipla(multiplaId, "CANCELADA")
       setMultiplas((prev) => prev.map((m) => (m.id === multiplaId ? res.multipla : m)))
       setBanca(res.banca)
       aplicarFlags(res.flags)
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Falha ao atualizar resultado")
+      alert(err instanceof ApiError ? err.message : "Falha ao cancelar múltipla")
+    }
+  }
+
+  const mudarResultadoItemMultipla = async (multiplaId: number, itemId: number, value: ResultType) => {
+    try {
+      const res = await api.resultadoItemMultipla(multiplaId, itemId, RESULT_TO_API[value])
+      setMultiplas((prev) => prev.map((m) => (m.id === multiplaId ? res.multipla : m)))
+      setBanca(res.banca)
+      aplicarFlags(res.flags)
+    } catch (err) {
+      alert(err instanceof ApiError ? err.message : "Falha ao atualizar resultado da seleção")
     }
   }
 
@@ -309,16 +321,30 @@ export default function BancaPage() {
                             <span className="text-muted-foreground">Odd acumulada: <strong className="text-foreground">{m.odd_total.toFixed(2)}</strong></span>
                             <span className="text-muted-foreground">Valor: <strong className="text-foreground">R$ {m.valor.toFixed(2)}</strong></span>
                           </div>
-                          <ResultDropdown
-                            value={apiToResult(m.resultado)}
-                            onChange={(v) => mudarResultadoMultipla(m.id, v)}
-                          />
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-medium px-2 py-1 rounded ${RESULTADO_COR[m.resultado]}`}>
+                              {RESULTADO_LABEL[m.resultado]}
+                            </span>
+                            {m.resultado === "PENDENTE" && (
+                              <button
+                                type="button"
+                                onClick={() => cancelarMultipla(m.id)}
+                                className="text-xs text-muted-foreground hover:text-destructive underline"
+                              >
+                                Cancelar múltipla
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <div className="space-y-2">
                           {m.itens.map((item) => (
                             <div key={item.id} className="flex items-center gap-2 text-sm">
                               <span className="flex-1 px-3 py-1.5 bg-card border border-border rounded text-foreground">{item.tipo_aposta}</span>
                               <span className="w-16 text-center px-2 py-1.5 bg-card border border-border rounded text-foreground">{item.odd.toFixed(2)}</span>
+                              <ResultDropdown
+                                value={apiToResult(item.resultado)}
+                                onChange={(v) => mudarResultadoItemMultipla(m.id, item.id, v)}
+                              />
                               {m.resultado === "PENDENTE" && (
                                 <button
                                   type="button"
