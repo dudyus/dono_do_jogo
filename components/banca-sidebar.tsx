@@ -98,7 +98,7 @@ export function BancaSidebar({ banca, onEditar, onDepositar, onSacar, onFechar }
             onClick={() => setModalAtivo("editar")}
             className="px-4 py-1.5 rounded-md text-sm font-medium bg-primary text-primary-foreground"
           >
-            Editar meta / stop
+            Editar objetivos
           </button>
           <button
             onClick={onFechar}
@@ -131,8 +131,8 @@ export function BancaSidebar({ banca, onEditar, onDepositar, onSacar, onFechar }
               disabled={carregando}
               className={`flex-1 py-2 rounded-md text-sm font-medium text-white transition-colors disabled:opacity-60 ${
                 modalAtivo === "depositar"
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-amber-600 hover:bg-amber-700"
+                  ? "bg-primary hover:bg-primary"
+                  : "bg-primary hover:bg-primary"
               }`}
             >
               {carregando ? "..." : "Confirmar"}
