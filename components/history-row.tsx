@@ -11,14 +11,15 @@ interface BetDetail {
 
 interface HistoryRowProps {
   date: string
-  banca: string
+  bancaInicial: string
+  bancaFinal: string
   meta: string
   stopLoss: string
   status: "Fechada" | "Red" | "Green"
   bets?: BetDetail[]
 }
 
-export function HistoryRow({ date, banca, meta, stopLoss, status, bets }: HistoryRowProps) {
+export function HistoryRow({ date, bancaInicial, bancaFinal, meta, stopLoss, status, bets }: HistoryRowProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const statusColor = {
@@ -29,9 +30,10 @@ export function HistoryRow({ date, banca, meta, stopLoss, status, bets }: Histor
 
   return (
     <div className="border-b border-border">
-      <div className="grid grid-cols-6 py-4 px-4 items-center text-sm">
+      <div className="grid grid-cols-7 py-4 px-4 items-center text-sm">
         <span className="text-foreground">{date}</span>
-        <span className="text-foreground">{banca}</span>
+        <span className="text-foreground">{bancaInicial}</span>
+        <span className="text-foreground">{bancaFinal}</span>
         <span className="text-foreground">{meta}</span>
         <span className="text-foreground">{stopLoss}</span>
         <span className={statusColor[status]}>{status}</span>

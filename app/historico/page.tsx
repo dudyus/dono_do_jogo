@@ -59,7 +59,8 @@ export default function HistoricoPage() {
         setTodos(
           res.historico.map((b) => ({
             date: dataCurta(b.data_fechamento ?? b.data_criacao),
-            banca: brl(b.saldo_atual),
+            bancaInicial: brl(b.saldo_inicial),
+            bancaFinal: brl(b.saldo_atual),
             meta: brl(b.meta_diaria),
             stopLoss: brl(b.stop_loss),
             status: b.resultado_final as HistoryItem["status"],
