@@ -261,40 +261,43 @@ export default function BancaPage() {
                     : "-"}
                 </p>
 
-                <div className="space-y-4">
-                  {apostas.map((aposta) => (
-                    <div
-                      key={aposta.id}
-                      className="bg-muted/30 border border-border rounded-lg p-4 flex flex-row items-end gap-4"
-                    >
-                      <div className="flex-1 min-w-[180px]">
-                        <span className="block text-xs text-primary mb-1">Aposta</span>
-                        <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground">
-                          {aposta.tipo_aposta}
+                {apostas.length > 0 && (
+                  <div className="space-y-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Simples</p>
+                    {apostas.map((aposta) => (
+                      <div
+                        key={aposta.id}
+                        className="bg-muted/30 border border-border rounded-lg p-4 flex flex-row items-end gap-4"
+                      >
+                        <div className="flex-1 min-w-[180px]">
+                          <span className="block text-xs text-primary mb-1">Aposta</span>
+                          <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground">
+                            {aposta.tipo_aposta}
+                          </div>
+                        </div>
+                        <div className="w-20">
+                          <span className="block text-xs text-primary mb-1">ODD</span>
+                          <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground text-center">
+                            {aposta.odd?.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="w-20">
+                          <span className="block text-xs text-primary mb-1">Valor</span>
+                          <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground text-center">
+                            {aposta.valor?.toFixed(2)}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="block text-xs text-primary mb-1">Resultado</span>
+                          <ResultDropdown
+                            value={apiToResult(aposta.resultado)}
+                            onChange={(v) => mudarResultado(aposta.id, v)}
+                          />
                         </div>
                       </div>
-                      <div className="w-20">
-                        <span className="block text-xs text-primary mb-1">ODD</span>
-                        <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground text-center">
-                          {aposta.odd?.toFixed(2)}
-                        </div>
-                      </div>
-                      <div className="w-20">
-                        <span className="block text-xs text-primary mb-1">Valor</span>
-                        <div className="px-3 py-2 bg-card border border-border rounded text-sm text-foreground text-center">
-                          {aposta.valor?.toFixed(2)}
-                        </div>
-                      </div>
-                      <div>
-                        <span className="block text-xs text-primary mb-1">Resultado</span>
-                        <ResultDropdown
-                          value={apiToResult(aposta.resultado)}
-                          onChange={(v) => mudarResultado(aposta.id, v)}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
                 {multiplas.length > 0 && (
                   <div className="mt-6 space-y-4">
@@ -333,6 +336,47 @@ export default function BancaPage() {
                     ))}
                   </div>
                 )}
+
+                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 mt-6 space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Nova Aposta Simples</p>
+                  <div className="flex flex-row items-end gap-3">
+                    <div className="flex-1 min-w-[180px]">
+                      <label className="block text-xs text-primary mb-1">Aposta</label>
+                      <input
+                        value={novaAposta.tipo}
+                        onChange={(e) => setNovaAposta({ ...novaAposta, tipo: e.target.value })}
+                        placeholder="Ex: Flamengo vence"
+                        className="w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="w-20">
+                      <label className="block text-xs text-primary mb-1">ODD</label>
+                      <input
+                        type="number"
+                        value={novaAposta.odd}
+                        onChange={(e) => setNovaAposta({ ...novaAposta, odd: e.target.value })}
+                        className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div className="w-20">
+                      <label className="block text-xs text-primary mb-1">Valor</label>
+                      <input
+                        type="number"
+                        value={novaAposta.valor}
+                        onChange={(e) => setNovaAposta({ ...novaAposta, valor: e.target.value })}
+                        className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={adicionarAposta}
+                      className="flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Adicionar
+                    </button>
+                  </div>
+                </div>
 
                 <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 mt-6 space-y-3">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Nova Múltipla</p>
@@ -401,45 +445,6 @@ export default function BancaPage() {
                       Criar Múltipla
                     </button>
                   </div>
-                </div>
-
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mt-6 mb-2">Nova Aposta Simples</p>
-                <div className="bg-muted/20 border border-dashed border-border rounded-lg p-4 flex flex-row items-end gap-3">
-                  <div className="flex-1 min-w-[180px]">
-                    <label className="block text-xs text-primary mb-1">Aposta</label>
-                    <input
-                      value={novaAposta.tipo}
-                      onChange={(e) => setNovaAposta({ ...novaAposta, tipo: e.target.value })}
-                      placeholder="Ex: Flamengo vence"
-                      className="w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div className="w-20">
-                    <label className="block text-xs text-primary mb-1">ODD</label>
-                    <input
-                      type="number"
-                      value={novaAposta.odd}
-                      onChange={(e) => setNovaAposta({ ...novaAposta, odd: e.target.value })}
-                      className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div className="w-20">
-                    <label className="block text-xs text-primary mb-1">Valor</label>
-                    <input
-                      type="number"
-                      value={novaAposta.valor}
-                      onChange={(e) => setNovaAposta({ ...novaAposta, valor: e.target.value })}
-                      className="no-spinner w-full px-3 py-2 bg-card border border-border rounded text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={adicionarAposta}
-                    className="flex items-center justify-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Adicionar
-                  </button>
                 </div>
               </div>
 

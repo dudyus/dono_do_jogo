@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { formatarHorarioPartida } from "@/lib/utils"
 
 interface MatchCardProps {
   id: number
@@ -7,12 +8,6 @@ interface MatchCardProps {
   data: string | null
   betTip: string
   risco: string
-}
-
-function hora(iso: string | null) {
-  if (!iso) return "--:--"
-  const d = new Date(iso)
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
 }
 
 const riscoCor: Record<string, string> = {
@@ -31,7 +26,7 @@ export function MatchCard({ id, homeTeam, awayTeam, data, betTip, risco }: Match
         </div>
 
         <div className="flex items-center justify-center min-w-[80px]">
-          <span className="text-foreground font-medium text-lg">{hora(data)}</span>
+          <span className="text-foreground font-medium text-lg">{formatarHorarioPartida(data)}</span>
         </div>
 
         <div className="flex-1 flex flex-col items-end gap-2">
