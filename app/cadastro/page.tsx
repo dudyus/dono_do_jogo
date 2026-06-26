@@ -28,7 +28,7 @@ export default function CadastroPage() {
     setCarregando(true)
     try {
       const res = await api.cadastro(nome, email, senha)
-      salvarUsuario({ id: res.id, nome: res.nome, email: res.email, perfil_risco: null })
+      salvarUsuario({ id: res.id, nome: res.nome, email: res.email, foto_perfil: null, perfil_risco: null })
       router.push("/onboarding")
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao conectar à API")

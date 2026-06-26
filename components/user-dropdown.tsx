@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getUsuario, logout } from "@/lib/auth"
+import type { Usuario } from "@/lib/api"
 
 function initials(nome: string) {
   return nome
@@ -17,13 +18,15 @@ function initials(nome: string) {
 
 export function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false)
-  const [nome, setNome] = useState("")
+  const [usuario, setUsuario] = useState<Usuario | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const u = getUsuario()
-    if (u) setNome(u.nome)
+    if (u) setUsuario(u)
   }, [])
+
+  const nome = usuario?.nome ?? ""
 
   const handleSignOut = () => {
     logout()
@@ -38,6 +41,7 @@ export function UserDropdown() {
       >
         <span className="text-sm text-foreground">{nome}</span>
         <Avatar className="w-8 h-8">
+          <AvatarImage src={usuario?.foto_perfil ?? undefined} alt={nome} />
           <AvatarFallback className="bg-muted text-muted-foreground text-xs">
             {nome ? initials(nome) : "?"}
           </AvatarFallback>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { BackButton } from "@/components/back-button"
 import { ProfileHeader } from "@/components/profile-header"
@@ -31,6 +31,8 @@ export default function PerfilPage() {
   const [senhaAtual, setSenhaAtual] = useState("")
   const [novaSenha, setNovaSenha] = useState("")
   const [confirmarSenha, setConfirmarSenha] = useState("")
+  const [enviandoFoto, setEnviandoFoto] = useState(false)
+  const inputFotoRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const u = getUsuario()
@@ -94,6 +96,34 @@ export default function PerfilPage() {
     } finally { setCarregando(false) }
   }
 
+  const escolherFoto = () => inputFotoRef.current?.click()
+
+  const selecionarFoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const arquivo = e.target.files?.[0]
+    e.target.value = ""
+    if (!arquivo || !usuario) return
+    if (!arquivo.type.startsWith("image/")) { setErro("Selecione um arquivo de imagem"); return }
+    if (arquivo.size > 2 * 1024 * 1024) { setErro("Imagem deve ter no máximo 2MB"); return }
+
+    setErro("")
+    setEnviandoFoto(true)
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(arquivo)
+      })
+      const atualizado = await api.editarFoto(usuario.id, dataUrl)
+      salvarUsuario(atualizado)
+      setUsuario(atualizado)
+    } catch (e) {
+      setErro(e instanceof ApiError ? e.message : "Erro ao atualizar foto")
+    } finally {
+      setEnviandoFoto(false)
+    }
+  }
+
   const deletarConta = async () => {
     if (!usuario) return
     setCarregando(true); setErro("")
@@ -120,7 +150,24 @@ export default function PerfilPage() {
 
         <div className="bg-card rounded-lg border border-border p-8">
           <div className="mb-8">
-            <ProfileAvatar name={usuario.nome} />
+            <input
+              ref={inputFotoRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={selecionarFoto}
+            />
+            <ProfileAvatar
+              name={usuario.nome}
+              imageUrl={usuario.foto_perfil ?? undefined}
+              onChangePhoto={enviandoFoto ? undefined : escolherFoto}
+            />
+            {enviandoFoto && (
+              <p className="text-xs text-muted-foreground text-center mt-2">Enviando foto...</p>
+            )}
+            {erro && !modal && (
+              <p className="text-xs text-destructive text-center mt-2">{erro}</p>
+            )}
           </div>
 
           <div className="space-y-6">

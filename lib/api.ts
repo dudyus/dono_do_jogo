@@ -132,6 +132,7 @@ export interface Usuario {
   id: number
   nome: string
   email: string
+  foto_perfil: string | null
   perfil_risco: string | null
 }
 
@@ -164,6 +165,12 @@ export const api = {
     request<Usuario>(`/usuario/${usuarioId}/email`, {
       method: "PATCH",
       body: JSON.stringify({ novo_email }),
+    }),
+
+  editarFoto: (usuarioId: number, foto_perfil: string) =>
+    request<Usuario>(`/usuario/${usuarioId}/foto`, {
+      method: "PATCH",
+      body: JSON.stringify({ foto_perfil }),
     }),
 
   alterarSenha: (usuarioId: number, senha_atual: string, nova_senha: string) =>
