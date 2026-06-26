@@ -84,13 +84,13 @@ export function BancaSidebar({ banca, onEditar, onDepositar, onSacar, onFechar }
         <div className="flex flex-col gap-2 w-full max-w-[160px]">
           <button
             onClick={() => { setValorMovimento(""); setErroMovimento(""); setModalAtivo("depositar") }}
-            className="px-4 py-1.5 rounded-md text-sm font-medium bg-primary text-white transition-colors"
+            className="px-4 py-1.5 rounded-md text-sm font-medium bg-primary text-primary-foreground transition-colors"
           >
             + Depositar
           </button>
           <button
             onClick={() => { setValorMovimento(""); setErroMovimento(""); setModalAtivo("sacar") }}
-            className="px-4 py-1.5 rounded-md text-sm font-medium bg-primary text-white transition-colors"
+            className="px-4 py-1.5 rounded-md text-sm font-medium bg-primary text-primary-foreground transition-colors"
           >
             − Sacar
           </button>
@@ -129,7 +129,7 @@ export function BancaSidebar({ banca, onEditar, onDepositar, onSacar, onFechar }
             <button
               onClick={confirmarMovimento}
               disabled={carregando}
-              className={`flex-1 py-2 rounded-md text-sm font-medium text-white transition-colors disabled:opacity-60 ${
+              className={`flex-1 py-2 rounded-md text-sm font-medium text-primary-foreground transition-colors disabled:opacity-60 ${
                 modalAtivo === "depositar"
                   ? "bg-primary hover:bg-primary"
                   : "bg-primary hover:bg-primary"
