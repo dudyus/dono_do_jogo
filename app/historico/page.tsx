@@ -2,12 +2,14 @@
 
 import { useEffect, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { FileDown } from "lucide-react"
 import { Header } from "@/components/header"
 import { MobileNav } from "@/components/mobile-nav"
 import { BackButton } from "@/components/back-button"
 import { HistoryTable, type HistoryItem } from "@/components/history-table"
-import { getUsuarioId } from "@/lib/auth"
+import { getUsuario, getUsuarioId } from "@/lib/auth"
 import { api, ApiError } from "@/lib/api"
+import { gerarRelatorioMensalPdf, type BancaHistorico } from "@/lib/relatorio-pdf"
 
 const ITENS_POR_PAGINA = 10
 
@@ -39,9 +41,13 @@ interface ItemFull extends HistoryItem {
   mesAno: string
 }
 
+interface BancaRaw extends BancaHistorico {
+  mesAno: string
+}
+
 export default function HistoricoPage() {
   const router = useRouter()
-  const [todos, setTodos] = useState<ItemFull[]>([])
+  const [bancasRaw, setBancasRaw] = useState<BancaRaw[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState("")
   const [mesFiltro, setMesFiltro] = useState<string>("todos")
@@ -56,30 +62,9 @@ export default function HistoricoPage() {
     api
       .historicoBancas(uid)
       .then((res) => {
-        setTodos(
+        setBancasRaw(
           res.historico.map((b) => ({
-            date: dataCurta(b.data_fechamento ?? b.data_criacao),
-            bancaInicial: brl(b.saldo_inicial),
-            bancaFinal: brl(b.saldo_atual),
-            meta: brl(b.meta_diaria),
-            stopLoss: brl(b.stop_loss),
-            status: b.resultado_final as HistoryItem["status"],
-            bets: b.apostas.map((a) => ({
-              name: a.tipo_aposta,
-              odd: a.odd != null ? a.odd.toFixed(2).replace(".", ",") : undefined,
-              value: a.valor != null ? a.valor.toFixed(2) : undefined,
-              resultado: a.resultado,
-            })),
-            multiplas: b.multiplas.map((m) => ({
-              oddTotal: m.odd_total.toFixed(2),
-              valor: m.valor.toFixed(2),
-              resultado: m.resultado,
-              itens: m.itens.map((item) => ({
-                name: item.tipo_aposta,
-                odd: item.odd.toFixed(2),
-                resultado: item.resultado,
-              })),
-            })),
+            ...b,
             mesAno: mesAnoChave(b.data_fechamento ?? b.data_criacao),
           }))
         )
@@ -90,15 +75,60 @@ export default function HistoricoPage() {
       .finally(() => setCarregando(false))
   }, [router])
 
+  const todos = useMemo<ItemFull[]>(
+    () =>
+      bancasRaw.map((b) => ({
+        date: dataCurta(b.data_fechamento ?? b.data_criacao),
+        bancaInicial: brl(b.saldo_inicial),
+        bancaFinal: brl(b.saldo_atual),
+        meta: brl(b.meta_diaria),
+        stopLoss: brl(b.stop_loss),
+        status: b.resultado_final as HistoryItem["status"],
+        bets: b.apostas.map((a) => ({
+          name: a.tipo_aposta,
+          odd: a.odd != null ? a.odd.toFixed(2).replace(".", ",") : undefined,
+          value: a.valor != null ? a.valor.toFixed(2) : undefined,
+          resultado: a.resultado,
+        })),
+        multiplas: b.multiplas.map((m) => ({
+          oddTotal: m.odd_total.toFixed(2),
+          valor: m.valor.toFixed(2),
+          resultado: m.resultado,
+          itens: m.itens.map((item) => ({
+            name: item.tipo_aposta,
+            odd: item.odd.toFixed(2),
+            resultado: item.resultado,
+          })),
+        })),
+        mesAno: b.mesAno,
+      })),
+    [bancasRaw]
+  )
+
   const mesesDisponiveis = useMemo(() => {
-    const set = new Set(todos.map((i) => i.mesAno))
+    const set = new Set(bancasRaw.map((b) => b.mesAno))
     return Array.from(set).sort((a, b) => b.localeCompare(a))
-  }, [todos])
+  }, [bancasRaw])
 
   const itensFiltrados = useMemo(() => {
     if (mesFiltro === "todos") return todos
     return todos.filter((i) => i.mesAno === mesFiltro)
   }, [todos, mesFiltro])
+
+  const bancasFiltradasRaw = useMemo(() => {
+    if (mesFiltro === "todos") return bancasRaw
+    return bancasRaw.filter((b) => b.mesAno === mesFiltro)
+  }, [bancasRaw, mesFiltro])
+
+  const gerarPdf = () => {
+    const usuario = getUsuario()
+    if (!usuario || bancasFiltradasRaw.length === 0) return
+    gerarRelatorioMensalPdf({
+      usuarioNome: usuario.nome,
+      periodoLabel: mesFiltro === "todos" ? "Todos os períodos" : mesAnoLabel(mesFiltro),
+      bancas: bancasFiltradasRaw,
+    })
+  }
 
   const totalPaginas = Math.max(1, Math.ceil(itensFiltrados.length / ITENS_POR_PAGINA))
   const itensPagina = itensFiltrados.slice(
@@ -125,31 +155,42 @@ export default function HistoricoPage() {
           ) : (
             <>
               {mesesDisponiveis.length > 0 && (
-                <div className="flex items-center gap-2 mb-4 flex-wrap">
-                  <span className="text-xs text-muted-foreground mr-1">Mês:</span>
-                  <button
-                    onClick={() => mudarFiltro("todos")}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                      mesFiltro === "todos"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    Todos
-                  </button>
-                  {mesesDisponiveis.map((m) => (
+                <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-muted-foreground mr-1">Mês:</span>
                     <button
-                      key={m}
-                      onClick={() => mudarFiltro(m)}
+                      onClick={() => mudarFiltro("todos")}
                       className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        mesFiltro === m
+                        mesFiltro === "todos"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground hover:text-foreground"
                       }`}
                     >
-                      {mesAnoLabel(m)}
+                      Todos
                     </button>
-                  ))}
+                    {mesesDisponiveis.map((m) => (
+                      <button
+                        key={m}
+                        onClick={() => mudarFiltro(m)}
+                        className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                          mesFiltro === m
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {mesAnoLabel(m)}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={gerarPdf}
+                    disabled={bancasFiltradasRaw.length === 0}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-40"
+                  >
+                    <FileDown className="w-3.5 h-3.5" />
+                    Gerar PDF
+                  </button>
                 </div>
               )}
 
