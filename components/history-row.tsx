@@ -31,7 +31,7 @@ interface HistoryRowProps {
 
 function ResultadoBadge({ resultado }: { resultado: string }) {
   return (
-    <span className={`inline-block w-[80px] text-center text-xs font-medium px-2 py-1 rounded ${RESULTADO_COR[resultado] ?? "bg-muted text-muted-foreground"}`}>
+    <span className={`inline-block min-w-[70px] whitespace-nowrap text-center text-xs font-medium px-3 py-1 rounded ${RESULTADO_COR[resultado] ?? "bg-muted text-muted-foreground"}`}>
       {RESULTADO_LABEL[resultado] ?? resultado}
     </span>
   )
@@ -103,7 +103,7 @@ export function HistoryRow({ date, bancaInicial, bancaFinal, meta, stopLoss, sta
                     <p className="text-xs text-primary">Múltiplas</p>
                     {multiplas.map((m, index) => (
                       <div key={index} className="border border-border rounded-lg p-3 space-y-2">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center justify-start gap-4">
                           <span className="text-xs text-muted-foreground">
                             Odd {m.oddTotal} · Valor R$ {m.valor}
                           </span>
