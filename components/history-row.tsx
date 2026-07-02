@@ -31,7 +31,7 @@ interface HistoryRowProps {
 
 function ResultadoBadge({ resultado }: { resultado: string }) {
   return (
-    <span className={`text-xs font-medium px-2 py-1 rounded ${RESULTADO_COR[resultado] ?? "bg-muted text-muted-foreground"}`}>
+    <span className={`inline-block w-[80px] text-center text-xs font-medium px-2 py-1 rounded ${RESULTADO_COR[resultado] ?? "bg-muted text-muted-foreground"}`}>
       {RESULTADO_LABEL[resultado] ?? resultado}
     </span>
   )
@@ -90,7 +90,7 @@ export function HistoryRow({ date, bancaInicial, bancaFinal, meta, stopLoss, sta
                         <div className="bg-muted rounded px-3 py-2 text-sm text-foreground text-center">
                           {bet.value ?? "-"}
                         </div>
-                        <div className="flex justify-center">
+                        <div className="flex justify-start">
                           <ResultadoBadge resultado={bet.resultado} />
                         </div>
                       </div>
@@ -111,7 +111,7 @@ export function HistoryRow({ date, bancaInicial, bancaFinal, meta, stopLoss, sta
                         </div>
                         <div className="space-y-1.5">
                           {m.itens.map((item, i) => (
-                            <div key={i} className="flex items-center gap-2 text-sm">
+                            <div key={i} className="flex items-center gap-4 text-sm">
                               <span className="flex-1 px-3 py-1.5 bg-muted rounded text-foreground">{item.name}</span>
                               <span className="w-16 text-center px-2 py-1.5 bg-muted rounded text-foreground">{item.odd}</span>
                               <ResultadoBadge resultado={item.resultado} />
