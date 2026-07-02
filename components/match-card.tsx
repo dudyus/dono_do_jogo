@@ -1,4 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
+import { getTeamLogo } from "@/lib/team-logos"
 import { formatarHorarioPartida } from "@/lib/utils"
 
 interface MatchCardProps {
@@ -44,12 +46,19 @@ export function MatchCard({ id, homeTeam, awayTeam, data, betTip, risco }: Match
 }
 
 function TeamRow({ name }: { name: string }) {
+  const logo = getTeamLogo(name)
   const sigla = name.split(" ").map((p) => p[0]).join("").slice(0, 3).toUpperCase()
   return (
     <div className="flex items-center gap-3">
-      <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold text-muted-foreground flex-shrink-0">
-        {sigla}
-      </div>
+      {logo ? (
+        <div className="w-6 h-6 relative flex-shrink-0">
+          <Image src={logo} alt={name} fill className="object-contain" />
+        </div>
+      ) : (
+        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold text-muted-foreground flex-shrink-0">
+          {sigla}
+        </div>
+      )}
       <span className="text-foreground text-sm font-medium uppercase">{name}</span>
     </div>
   )
