@@ -6,7 +6,7 @@ import { AuthInput } from "@/components/auth-input"
 import { AuthCheckbox } from "@/components/auth-checkbox"
 import { AuthSidebar } from "@/components/auth-sidebar"
 import { api, ApiError } from "@/lib/api"
-import { salvarUsuario } from "@/lib/auth"
+import { salvarSessao } from "@/lib/auth"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,11 +22,11 @@ export default function LoginPage() {
     setCarregando(true)
     try {
       const res = await api.login(email, senha)
-      if (!res.sucesso || !res.usuario) {
+      if (!res.sucesso || !res.usuario || !res.token) {
         setErro(res.mensagem || "Email ou senha inválidos")
         return
       }
-      salvarUsuario(res.usuario)
+      salvarSessao(res.usuario, res.token)
       router.push("/")
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao conectar à API")

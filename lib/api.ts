@@ -1,10 +1,14 @@
+import { getToken } from "./auth"
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getToken()
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init?.headers ?? {}),
     },
     cache: "no-store",
@@ -183,13 +187,13 @@ export const api = {
     request<{ mensagem: string }>(`/usuario/${usuarioId}`, { method: "DELETE" }),
 
   login: (email: string, senha: string) =>
-    request<{ sucesso: boolean; mensagem: string; usuario?: Usuario }>("/login", {
+    request<{ sucesso: boolean; mensagem: string; token?: string; usuario?: Usuario }>("/login", {
       method: "POST",
       body: JSON.stringify({ email, senha }),
     }),
 
   cadastro: (nome: string, email: string, senha: string) =>
-    request<{ id: number; nome: string; email: string; mensagem: string }>("/cadastro", {
+    request<{ id: number; nome: string; email: string; token: string; mensagem: string }>("/cadastro", {
       method: "POST",
       body: JSON.stringify({ nome, email, senha }),
     }),

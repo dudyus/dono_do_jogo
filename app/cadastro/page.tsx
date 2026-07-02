@@ -6,7 +6,7 @@ import { AuthInput } from "@/components/auth-input"
 import { AuthCheckbox } from "@/components/auth-checkbox"
 import { AuthSidebar } from "@/components/auth-sidebar"
 import { api, ApiError } from "@/lib/api"
-import { salvarUsuario } from "@/lib/auth"
+import { salvarSessao } from "@/lib/auth"
 
 export default function CadastroPage() {
   const router = useRouter()
@@ -28,7 +28,7 @@ export default function CadastroPage() {
     setCarregando(true)
     try {
       const res = await api.cadastro(nome, email, senha)
-      salvarUsuario({ id: res.id, nome: res.nome, email: res.email, foto_perfil: null, perfil_risco: null })
+      salvarSessao({ id: res.id, nome: res.nome, email: res.email, foto_perfil: null, perfil_risco: null }, res.token)
       router.push("/onboarding")
     } catch (err) {
       setErro(err instanceof ApiError ? err.message : "Falha ao conectar à API")
